@@ -24,9 +24,8 @@ function initial_cluster {
   RET=""
   for i in $(seq 0 $((NODES-1)))
   do
-    SEP=","
-    [ "${RET}" = "" ] && SEP=""
-    RET="${RET}${SEP}$(node_name $i)=http://localhost:$((PORT_BASE+2*i+1))"
+    [ "${RET}" = "" ] || RET="${RET},"
+    RET="${RET}$(node_name $i)=http://localhost:$((PORT_BASE+2*i+1))"
   done
   echo "$RET"
 }
