@@ -1,29 +1,56 @@
 #!/bin/bash
+# vim: foldmethod=marker
 
 # Ref: https://github.com/etcd-io/etcd/blob/main/etcd.conf.yml.sample
 
-[ "$NODES" = "" ] && NODES="5"
+# {{{ globals
 
-case "$1" in
-  start)
-    cd "$(dirname "$0")"
-    set -e -o pipefail
-    INITIAL_CLUSTER=""
-    for i in $(seq 0 $((NODES-1)))
-    do
-      SEP=","
-      [ "${INITIAL_CLUSTER}" = "" ] && SEP=""
-      INITIAL_CLUSTER="${INITIAL_CLUSTER}${SEP}n${i}=http://localhost:$((2380+2*$i))"
-    done
-    for i in $(seq 0 $((NODES-1)))
-    do
-      ETCD_NAME="n$i"
-      rm -rf $ETCD_NAME
-      mkdir -p $ETCD_NAME
-      CLI_PORT=$((2379+2*i))
-      PEER_PORT=$((2380+2*i))
-      ETCD_CONFIG_FILE="${ETCD_NAME}/etcd.conf.yaml"
-      cat > "$ETCD_CONFIG_FILE" << __EOF
+[ "$NODES" = "" ] && NODES="5"
+[ "$PORT_BASE" = "" ] && PORT_BASE="2379"
+
+# }}}
+# functions
+# {{{ node_name()
+
+function node_name {
+  n="$1"
+  echo "n${n}"
+}
+
+# }}}
+# {{{ initial_cluster()
+
+function initial_cluster {
+  RET=""
+  for i in $(seq 0 $((NODES-1)))
+  do
+    SEP=","
+    [ "${RET}" = "" ] && SEP=""
+    RET="${RET}${SEP}$(node_name $i)=http://localhost:$((PORT_BASE+2*i+1))"
+  done
+  echo "$RET"
+}
+
+# }}}
+# {{{ unit_name()
+
+function unit_name {
+  n=$1
+  echo "etcd-$(node_name $n)"
+}
+
+# }}}
+# {{{ node_config()
+
+function node_config {
+  n=$1
+  ETCD_NAME="$(node_name $n)"
+  rm -rf $ETCD_NAME
+  mkdir -p $ETCD_NAME
+  CLI_PORT=$((PORT_BASE+2*n))
+  PEER_PORT=$((PORT_BASE+2*n+1))
+  ETCD_CONFIG_FILE="${ETCD_NAME}/etcd.conf.yaml"
+  cat > "$ETCD_CONFIG_FILE" << __EOF
 name: "${ETCD_NAME}"
 data-dir: "${ETCD_NAME}/data"
 wal-dir: "${ETCD_NAME}/wal"
@@ -31,26 +58,55 @@ listen-client-urls: "http://localhost:${CLI_PORT}"
 initial-advertise-client-urls: "http://localhost:${CLI_PORT}"
 listen-peer-urls: "http://localhost:${PEER_PORT}"
 initial-advertise-peer-urls: "http://localhost:${PEER_PORT}"
-initial-cluster: "${INITIAL_CLUSTER}"
+initial-cluster: "$(initial_cluster)"
 initial-cluster-state: "new"
 initial-cluster-token: "ba88ab559201152899512f43dbafa983"
-log-outputs:
-- stderr
+log-outputs: [stderr]
 __EOF
-      UNIT_NAME="etcd-${ETCD_NAME}"
-      set -x
-      systemd-run --user --same-dir -E ETCD_CONFIG_FILE="${ETCD_CONFIG_FILE}" -u "$UNIT_NAME" etcd
-      { set +x; } 2> /dev/null
+  echo "${ETCD_CONFIG_FILE}"
+}
+
+# }}}
+# {{{ node_start()
+
+function node_start {
+  n=$1
+  ETCD_CONFIG_FILE="$(node_config $n)"
+  UNIT_NAME="$(unit_name $n)"
+  set -x
+  systemd-run --user --same-dir -E ETCD_CONFIG_FILE="${ETCD_CONFIG_FILE}" -u "$UNIT_NAME" etcd
+  { set +x; } 2> /dev/null
+}
+
+# }}}
+# {{{ node_stop()
+
+function node_stop {
+  n=$1
+  UNIT_NAME="$(unit_name $n)"
+  set -x
+  systemctl --user stop "$UNIT_NAME"
+  systemctl --user reset-failed "$UNIT_NAME"
+  { set +x; } 2> /dev/null
+}
+
+# }}}
+# main
+# {{{ main
+
+case "$1" in
+  start)
+    cd "$(dirname "$0")"
+    set -e -o pipefail
+    for n in $(seq 0 $((NODES-1)))
+    do
+      node_start "$n"
     done
   ;;
   stop)
-    for i in $(seq 0 $((NODES-1)))
+    for n in $(seq 0 $((NODES-1)))
     do
-      UNIT_NAME="etcd-n${i}"
-      set -x
-      systemctl --user stop "$UNIT_NAME"
-      systemctl --user reset-failed "$UNIT_NAME"
-      { set +x; } 2> /dev/null
+      node_stop "$n"
     done
   ;;
   *)
@@ -63,3 +119,4 @@ __EOF
   ;;
 esac
 
+# }}}
