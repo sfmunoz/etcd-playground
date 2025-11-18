@@ -5,6 +5,7 @@
   - [Install (releases)](#install-releases)
   - [Install (docker)](#install-docker)
   - [Install (brew)](#install-brew)
+- [Backup / restore](#backup--restore)
 - Modules
     - [standalone](standalone/README.md)
 
@@ -55,4 +56,21 @@ $ brew install etcd
 $ etcdctl version
 etcdctl version: 3.6.6
 API version: 3.6
+```
+
+## Backup / restore
+
+Refs:
+
+- https://etcd.io/docs/v3.6/tasks/operator/how-to-save-database/
+- https://etcd.io/docs/v3.6/op-guide/recovery/
+
+Brief/simplistic:
+```
+$ etcdctl snapshot save backup_$(date +%Y%m%d_%H%M%S).db
+
+$ etcdutl snapshot status backup_20251118_193725.db                         
+f19f5bf, 22437, 22282, 1.7 MB, 3.6.0
+
+$ etcdutl snapshot restore backup_20251118_193725.db --data-dir etcd-restore
 ```
