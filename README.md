@@ -3,6 +3,7 @@
 - [References](#references)
 - [Install (releases)](#install-releases)
 - [Install (docker)](#install-docker)
+- [Install (brew)](#install-brew)
 
 ## References
 
@@ -33,15 +34,20 @@ $ etcdctl version
 etcdctl version: 3.6.6
 API version: 3.6
 ```
-
 ## Install (docker)
-
 ```
 $ docker run -it --rm --name etcd quay.io/coreos/etcd:v3.6.6
 ```
-
 Client:
 ```
 $ docker exec -it etcd etcdctl put k v
 OK
+```
+## Install (brew)
+```
+$ brew install etcd
+
+$ etcdctl version
+etcdctl version: 3.6.6
+API version: 3.6
 ```
