@@ -4,6 +4,8 @@
 - [Install (releases)](#install-releases)
 - [Install (docker)](#install-docker)
 - [Install (brew)](#install-brew)
+- Modules
+    - [standalone](standalone/README.md)
 
 ## References
 
