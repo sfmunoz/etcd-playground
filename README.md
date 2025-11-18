@@ -1,9 +1,10 @@
 # etcd-playground
 
 - [References](#references)
-- [Install (releases)](#install-releases)
-- [Install (docker)](#install-docker)
-- [Install (brew)](#install-brew)
+- Install
+  - [Install (releases)](#install-releases)
+  - [Install (docker)](#install-docker)
+  - [Install (brew)](#install-brew)
 - Modules
     - [standalone](standalone/README.md)
 
@@ -13,7 +14,9 @@
 - https://github.com/etcd-io/etcd
 - [k8s-playground (external repository)](https://github.com/sfmunoz/k8s-playground)
 
-## Install (releases)
+## Install
+
+### Install (releases)
 
 Ref: https://etcd.io/ → https://etcd.io/docs/v3.6/quickstart/ → https://etcd.io/docs/v3.6/install/ → https://github.com/etcd-io/etcd/releases/
 
@@ -36,7 +39,7 @@ $ etcdctl version
 etcdctl version: 3.6.6
 API version: 3.6
 ```
-## Install (docker)
+### Install (docker)
 ```
 $ docker run -it --rm --name etcd quay.io/coreos/etcd:v3.6.6
 ```
@@ -45,7 +48,7 @@ Client:
 $ docker exec -it etcd etcdctl put k v
 OK
 ```
-## Install (brew)
+### Install (brew)
 ```
 $ brew install etcd
 
