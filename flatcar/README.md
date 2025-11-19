@@ -1,7 +1,20 @@
 # etcd: flatcar 4459.2.0
 
+- [Usage](#usage)
 - [/usr/lib/flatcar/etcd-wrapper](#usrlibflatcaretcd-wrapper)
 - [/usr/lib/systemd/system/etcd-member.service](#usrlibsystemdsystemetcd-memberservice)
+
+## Usage
+
+It's ready to be run on vanilla **flatcar 4459.2.0**:
+
+```
+core@localhost ~ $ sudo systemctl start etcd-member
+
+core@localhost ~ $ docker ps -a
+CONTAINER ID   IMAGE                         COMMAND                 CREATED              STATUS              PORTS     NAMES
+fb51cea61662   quay.io/coreos/etcd:v3.5.16   "/usr/local/bin/etcd"   About a minute ago   Up About a minute             etcd-member
+```
 
 ## /usr/lib/flatcar/etcd-wrapper
 
