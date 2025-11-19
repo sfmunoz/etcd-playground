@@ -1,8 +1,13 @@
 # etcd: flatcar 4459.2.0
 
+- [References](#references)
 - [Usage](#usage)
 - [/usr/lib/flatcar/etcd-wrapper](#usrlibflatcaretcd-wrapper)
 - [/usr/lib/systemd/system/etcd-member.service](#usrlibsystemdsystemetcd-memberservice)
+
+## References
+
+> https://www.flatcar.org/docs/latest/setup/customization/customize-etcd-unit/
 
 ## Usage
 
