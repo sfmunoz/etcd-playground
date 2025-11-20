@@ -11,16 +11,16 @@ systemd:
            [Service]
            ExecStart=
            ExecStart=/usr/lib/coreos/etcd-wrapper $ETCD_OPTS \
-             --ca-file="/path/to/CA.pem" \
-             --cert-file="/path/to/server.crt" \
-             --key-file="/path/to/server.key" \
-             --peer-ca-file="/path/to/CA.pem" \
-             --peer-cert-file="/path/to/peers.crt" \
-             --peer-key-file="/path/to/peers.key"
+             --ca-file="/etc/etcd-member/ca.pem" \
+             --cert-file="/etc/etcd-member/server.crt" \
+             --key-file="/etc/etcd-member/server.key" \
+             --peer-ca-file="/etc/etcd-member/ca.pem" \
+             --peer-cert-file="/etc/etcd-member/peers.crt" \
+             --peer-key-file="/etc/etcd-member/peers.key"
 
 storage:
   files:
-    - path: /path/to/CA.pem
+    - path: /etc/etcd-member/ca.pem
       mode: 0644
       contents:
         inline: |
@@ -29,7 +29,7 @@ storage:
           ...snip...
           EtHaxYQRy72yZrte6Ypw57xPRB8sw1DIYjr821Lw05DrLuBYcbyclg==
           -----END CERTIFICATE-----
-    - path: /path/to/server.crt
+    - path: /etc/etcd-member/server.crt
       mode: 0644
       contents:
         inline: |
@@ -40,7 +40,7 @@ storage:
           rdmtCVLOyo2wz/UTzvo7UpuxRrnizBHpytE4u0KgifGp1OOKY+1Lx8XSH7jJIaZB
           a3m12FMs3AsSt7mzyZk+bH2WjZLrlUXyrvprI40=
           -----END CERTIFICATE-----
-    - path: /path/to/server.key
+    - path: /etc/etcd-member/server.key
       mode: 0644
       contents:
         inline: |
@@ -52,7 +52,7 @@ storage:
           ...snip...
           mgVh2LBerGMbsdsTQ268sDvHKTdD9MDAunZlQIgO2zotARY02MLV/Q5erASYdCxk
           -----END RSA PRIVATE KEY-----
-    - path: /path/to/peers.crt
+    - path: /etc/etcd-member/peers.crt
       mode: 0644
       contents:
         inline: |
@@ -63,7 +63,7 @@ storage:
           BHpytE4u0KgifGp1OOKY+1Lx8XSH7jJIaZBrdmtCVLOyo2wz/UTzvo7UpuxRrniz
           St7mza3m12FMs3AsyZk+bH2WjZLrlUXyrvprI90=
           -----END CERTIFICATE-----
-    - path: /path/to/peers.key
+    - path: /etc/etcd-member/peers.key
       mode: 0644
       contents:
         inline: |
