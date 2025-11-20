@@ -75,3 +75,9 @@ storage:
           ...snip...
           DvHKTdD9MDAunZlQIgO2zotmgVh2LBerGMbsdsTQ268sARY02MLV/Q5erASYdCxk
           -----END RSA PRIVATE KEY-----
+
+passwd:
+  users:
+  - name: core
+    ssh_authorized_keys:
+    - "ssh-rsa AAAA..."
