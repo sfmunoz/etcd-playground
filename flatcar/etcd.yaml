@@ -1,0 +1,118 @@
+variant: flatcar
+version: 1.0.0
+
+systemd:
+ units:
+   - name: etcd-member.service
+     enabled: true
+     dropins:
+       - name: 20-clct-etcd-member.conf
+         contents: |
+           [Service]
+           ExecStart=
+           ExecStart=/usr/lib/coreos/etcd-wrapper $ETCD_OPTS \
+             --trusted-ca-file="/var/lib/etcd/ca.pem" \
+             --cert-file="/var/lib/etcd/server.crt" \
+             --key-file="/var/lib/etcd/server.key" \
+             --peer-trusted-ca-file="/var/lib/etcd/ca.pem" \
+             --peer-cert-file="/var/lib/etcd/peers.crt" \
+             --peer-key-file="/var/lib/etcd/peers.key" \
+             --listen-client-urls="https://localhost:2379" \
+             --advertise-client-urls="https://localhost:2379" \
+             --listen-peer-urls="https://localhost:2380" \
+             --client-cert-auth
+
+storage:
+  files:
+    - path: /var/lib/etcd/ca.pem
+      mode: 0644
+      contents:
+        inline: |
+          -----BEGIN CERTIFICATE-----
+          MIIFNDCCAx6gAwIBAgIBATALBgkqhkiG9w0BAQUwLTEMMAoGA1UEBhMDVVNBMRAw
+          ...snip...
+          EtHaxYQRy72yZrte6Ypw57xPRB8sw1DIYjr821Lw05DrLuBYcbyclg==
+          -----END CERTIFICATE-----
+    - path: /var/lib/etcd/server.crt
+      mode: 0644
+      contents:
+        inline: |
+          -----BEGIN CERTIFICATE-----
+          MIIFWTCCA0OgAwIBAgIBAjALBgkqhkiG9w0BAQUwLTEMMAoGA1UEBhMDVVNBMRAw
+          DgYDVQQKEwdldGNkLWNhMQswCQYDVQQLEwJDQTAeFw0xNDA1MjEyMTQ0MjhaFw0y
+          ...snip...
+          rdmtCVLOyo2wz/UTzvo7UpuxRrnizBHpytE4u0KgifGp1OOKY+1Lx8XSH7jJIaZB
+          a3m12FMs3AsSt7mzyZk+bH2WjZLrlUXyrvprI40=
+          -----END CERTIFICATE-----
+    - path: /var/lib/etcd/server.key
+      mode: 0644
+      contents:
+        inline: |
+          -----BEGIN RSA PRIVATE KEY-----
+          Proc-Type: 4,ENCRYPTED
+          DEK-Info: DES-EDE3-CBC,069abc493cd8bda6
+
+          TBX9mCqvzNMWZN6YQKR2cFxYISFreNk5Q938s5YClnCWz3B6KfwCZtjMlbdqAakj
+          ...snip...
+          mgVh2LBerGMbsdsTQ268sDvHKTdD9MDAunZlQIgO2zotARY02MLV/Q5erASYdCxk
+          -----END RSA PRIVATE KEY-----
+    - path: /var/lib/etcd/peers.crt
+      mode: 0644
+      contents:
+        inline: |
+          -----BEGIN CERTIFICATE-----
+          VQQLEwJDQTAeFw0xNDA1MjEyMTQ0MjhaFw0yMIIFWTCCA0OgAwIBAgIBAjALBgkq
+          DgYDVQQKEwdldGNkLWNhMQswCQYDhkiG9w0BAQUwLTEMMAoGA1UEBhMDVVNBMRAw
+          ...snip...
+          BHpytE4u0KgifGp1OOKY+1Lx8XSH7jJIaZBrdmtCVLOyo2wz/UTzvo7UpuxRrniz
+          St7mza3m12FMs3AsyZk+bH2WjZLrlUXyrvprI90=
+          -----END CERTIFICATE-----
+    - path: /var/lib/etcd/peers.key
+      mode: 0644
+      contents:
+        inline: |
+          -----BEGIN RSA PRIVATE KEY-----
+          Proc-Type: 4,ENCRYPTED
+          DEK-Info: DES-EDE3-CBC,069abc493cd8bda6
+
+          SFreNk5Q938s5YTBX9mCqvzNMWZN6YQKR2cFxYIClnCWz3B6KfwCZtjMlbdqAakj
+          ...snip...
+          DvHKTdD9MDAunZlQIgO2zotmgVh2LBerGMbsdsTQ268sARY02MLV/Q5erASYdCxk
+          -----END RSA PRIVATE KEY-----
+    - path: /root/cli.crt
+      mode: 0600
+      contents:
+        inline: |
+          -----BEGIN CERTIFICATE-----
+          VQQLEwJDQTAeFw0xNDA1MjEyMTQ0MjhaFw0yMIIFWTCCA0OgAwIBAgIBAjALBgkq
+          DgYDVQQKEwdldGNkLWNhMQswCQYDhkiG9w0BAQUwLTEMMAoGA1UEBhMDVVNBMRAw
+          ...snip...
+          BHpytE4u0KgifGp1OOKY+1Lx8XSH7jJIaZBrdmtCVLOyo2wz/UTzvo7UpuxRrniz
+          St7mza3m12FMs3AsyZk+bH2WjZLrlUXyrvprI90=
+          -----END CERTIFICATE-----
+    - path: /root/cli.key
+      mode: 0600
+      contents:
+        inline: |
+          -----BEGIN RSA PRIVATE KEY-----
+          Proc-Type: 4,ENCRYPTED
+          DEK-Info: DES-EDE3-CBC,069abc493cd8bda6
+
+          SFreNk5Q938s5YTBX9mCqvzNMWZN6YQKR2cFxYIClnCWz3B6KfwCZtjMlbdqAakj
+          ...snip...
+          DvHKTdD9MDAunZlQIgO2zotmgVh2LBerGMbsdsTQ268sARY02MLV/Q5erASYdCxk
+          -----END RSA PRIVATE KEY-----
+    - path: /root/etcdctl.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/bash
+          set -x
+          etcdctl --cacert /var/lib/etcd/ca.pem --key /root/cli.key --cert /root/cli.crt put k 1234
+          etcdctl --cacert /var/lib/etcd/ca.pem --key /root/cli.key --cert /root/cli.crt get k
+
+passwd:
+  users:
+  - name: core
+    ssh_authorized_keys:
+    - "ssh-rsa AAAA..."

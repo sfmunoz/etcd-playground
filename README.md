@@ -7,7 +7,8 @@
   - [Install (brew)](#install-brew)
 - [Backup / restore](#backup--restore)
 - Modules
-    - [standalone](standalone/README.md)
+  - [standalone](standalone/README.md)
+  - [flatcar](flatcar/README.md)
 
 ## References
 
