@@ -16,7 +16,11 @@ systemd:
              --key-file="/var/lib/etcd/server.key" \
              --peer-trusted-ca-file="/var/lib/etcd/ca.pem" \
              --peer-cert-file="/var/lib/etcd/peers.crt" \
-             --peer-key-file="/var/lib/etcd/peers.key"
+             --peer-key-file="/var/lib/etcd/peers.key" \
+             --listen-client-urls="https://localhost:2379" \
+             --advertise-client-urls="https://localhost:2379" \
+             --listen-peer-urls="https://localhost:2380" \
+             --client-cert-auth
 
 storage:
   files:
