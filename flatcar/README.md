@@ -2,8 +2,8 @@
 
 - [References](#references)
 - [Usage](#usage)
-- [/usr/lib/flatcar/etcd-wrapper](#usrlibflatcaretcd-wrapper)
 - [/usr/lib/systemd/system/etcd-member.service](#usrlibsystemdsystemetcd-memberservice)
+- [/usr/lib/flatcar/etcd-wrapper](#usrlibflatcaretcd-wrapper)
 
 ## References
 
@@ -19,6 +19,41 @@ core@localhost ~ $ sudo systemctl start etcd-member
 core@localhost ~ $ docker ps -a
 CONTAINER ID   IMAGE                         COMMAND                 CREATED              STATUS              PORTS     NAMES
 fb51cea61662   quay.io/coreos/etcd:v3.5.16   "/usr/local/bin/etcd"   About a minute ago   Up About a minute             etcd-member
+```
+
+## /usr/lib/systemd/system/etcd-member.service
+
+```ini
+core@localhost ~ $ cat /usr/lib/systemd/system/etcd-member.service
+[Unit]
+Description=etcd (System Application Container)
+Documentation=https://github.com/etcd-io/etcd
+Wants=network-online.target network.target
+After=network-online.target
+Conflicts=etcd.service
+Conflicts=etcd2.service
+
+[Service]
+Type=notify
+NotifyAccess=all
+Restart=always
+RestartSec=10s
+TimeoutStartSec=0
+LimitNOFILE=40000
+
+Environment="ETCD_IMAGE_URL=quay.io/coreos/etcd"
+Environment="ETCD_IMAGE_TAG=v3.5.16"
+Environment="ETCD_NAME=%m"
+Environment="ETCD_USER=etcd"
+Environment="ETCD_DATA_DIR=/var/lib/etcd"
+Environment="ETCD_SSL_DIR=/etc/ssl/certs"
+
+ExecStart=/usr/lib/flatcar/etcd-wrapper $ETCD_OPTS
+ExecStop=/usr/bin/docker stop etcd-member
+ExecStopPost=/usr/bin/docker rm etcd-member
+
+[Install]
+WantedBy=multi-user.target
 ```
 
 ## /usr/lib/flatcar/etcd-wrapper
@@ -61,39 +96,4 @@ chmod 700 ${etcd_data_dir}
 umask 000
 # mapping only /run/etcd-notify does not work and we use the full /run, also we must set NOTIFY_SOCKET in the container but use the original for /usr/libexec/sdnotify-proxy
 /usr/libexec/sdnotify-proxy /run/etcd-notify /usr/bin/docker run --name etcd-member --network=host --ipc=host -u $(id -u ${ETCD_USER}):$(id -g ${ETCD_USER}) -v /run:/run -v /usr/share/ca-certificates:/usr/share/ca-certificates:ro -v ${etcd_data_dir}:/var/lib/etcd:rw -v ${ETCD_SSL_DIR}:/etc/ssl/certs:ro --env-file <(env; echo PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; echo NOTIFY_SOCKET=/run/etcd-notify) --entrypoint /usr/local/bin/etcd ${ETCD_IMAGE:-${ETCD_IMAGE_URL}:${ETCD_IMAGE_TAG}} "$@"
-```
-
-## /usr/lib/systemd/system/etcd-member.service
-
-```ini
-core@localhost ~ $ cat /usr/lib/systemd/system/etcd-member.service
-[Unit]
-Description=etcd (System Application Container)
-Documentation=https://github.com/etcd-io/etcd
-Wants=network-online.target network.target
-After=network-online.target
-Conflicts=etcd.service
-Conflicts=etcd2.service
-
-[Service]
-Type=notify
-NotifyAccess=all
-Restart=always
-RestartSec=10s
-TimeoutStartSec=0
-LimitNOFILE=40000
-
-Environment="ETCD_IMAGE_URL=quay.io/coreos/etcd"
-Environment="ETCD_IMAGE_TAG=v3.5.16"
-Environment="ETCD_NAME=%m"
-Environment="ETCD_USER=etcd"
-Environment="ETCD_DATA_DIR=/var/lib/etcd"
-Environment="ETCD_SSL_DIR=/etc/ssl/certs"
-
-ExecStart=/usr/lib/flatcar/etcd-wrapper $ETCD_OPTS
-ExecStop=/usr/bin/docker stop etcd-member
-ExecStopPost=/usr/bin/docker rm etcd-member
-
-[Install]
-WantedBy=multi-user.target
 ```
