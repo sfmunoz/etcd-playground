@@ -1,15 +1,37 @@
 # etcd: flatcar 4459.2.0
 
 - [References](#references)
-- [Usage](#usage)
-- [/usr/lib/systemd/system/etcd-member.service](#usrlibsystemdsystemetcd-memberservice)
-- [/usr/lib/flatcar/etcd-wrapper](#usrlibflatcaretcd-wrapper)
+- [Example](#example)
+- [Details](#details)
+  - [Usage](#usage)
+  - [/usr/lib/systemd/system/etcd-member.service](#usrlibsystemdsystemetcd-memberservice)
+  - [/usr/lib/flatcar/etcd-wrapper](#usrlibflatcaretcd-wrapper)
 
 ## References
 
 > https://www.flatcar.org/docs/latest/setup/customization/customize-etcd-unit/
 
-## Usage
+## Example
+
+**Notice**: **etcd.yaml** must be provided with proper keys/certs:
+
+Reset/provision of flatcar hosts (**etcd.json** is created, injected followed by VM reset):
+```
+IPS="192.168.0.1 192.168.0.2 192.168.0.3" make reset
+```
+Demo client execution (TLS):
+```
+core@localhost ~ $ sudo /root/etcdctl.sh
++ etcdctl --cacert /var/lib/etcd/ca.pem --key /root/cli.key --cert /root/cli.crt put k 1234
+OK
++ etcdctl --cacert /var/lib/etcd/ca.pem --key /root/cli.key --cert /root/cli.crt get k
+k
+1234
+```
+
+## Details
+
+### Usage
 
 It's ready to be run on vanilla **flatcar 4459.2.0**:
 
@@ -21,7 +43,7 @@ CONTAINER ID   IMAGE                         COMMAND                 CREATED    
 fb51cea61662   quay.io/coreos/etcd:v3.5.16   "/usr/local/bin/etcd"   About a minute ago   Up About a minute             etcd-member
 ```
 
-## /usr/lib/systemd/system/etcd-member.service
+### /usr/lib/systemd/system/etcd-member.service
 
 ```ini
 core@localhost ~ $ cat /usr/lib/systemd/system/etcd-member.service
@@ -56,7 +78,7 @@ ExecStopPost=/usr/bin/docker rm etcd-member
 WantedBy=multi-user.target
 ```
 
-## /usr/lib/flatcar/etcd-wrapper
+### /usr/lib/flatcar/etcd-wrapper
 
 ```bash
 core@localhost ~ $ cat /usr/lib/flatcar/etcd-wrapper
