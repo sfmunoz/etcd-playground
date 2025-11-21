@@ -18,6 +18,7 @@
 Reset/provision of flatcar hosts (**etcd.json** is created, injected followed by VM reset):
 ```
 $ IPS="192.168.56.31 192.168.56.32 192.168.56.33" make reset
+docker run --rm -i quay.io/coreos/butane:latest < etcd.yaml > etcd.json
 + scp etcd.json core@192.168.56.31:
 etcd.json                                                                                                          100% 3829     5.6MB/s   00:00
 + ssh core@192.168.56.31 sudo flatcar-reset --keep-machine-id --keep-paths '/etc/ssh/ssh_host_.*' /var/log -F etcd.json && sudo systemctl reboot
