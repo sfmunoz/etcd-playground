@@ -79,6 +79,37 @@ storage:
           ...snip...
           DvHKTdD9MDAunZlQIgO2zotmgVh2LBerGMbsdsTQ268sARY02MLV/Q5erASYdCxk
           -----END RSA PRIVATE KEY-----
+    - path: /root/cli.crt
+      mode: 0600
+      contents:
+        inline: |
+          -----BEGIN CERTIFICATE-----
+          VQQLEwJDQTAeFw0xNDA1MjEyMTQ0MjhaFw0yMIIFWTCCA0OgAwIBAgIBAjALBgkq
+          DgYDVQQKEwdldGNkLWNhMQswCQYDhkiG9w0BAQUwLTEMMAoGA1UEBhMDVVNBMRAw
+          ...snip...
+          BHpytE4u0KgifGp1OOKY+1Lx8XSH7jJIaZBrdmtCVLOyo2wz/UTzvo7UpuxRrniz
+          St7mza3m12FMs3AsyZk+bH2WjZLrlUXyrvprI90=
+          -----END CERTIFICATE-----
+    - path: /root/cli.key
+      mode: 0600
+      contents:
+        inline: |
+          -----BEGIN RSA PRIVATE KEY-----
+          Proc-Type: 4,ENCRYPTED
+          DEK-Info: DES-EDE3-CBC,069abc493cd8bda6
+
+          SFreNk5Q938s5YTBX9mCqvzNMWZN6YQKR2cFxYIClnCWz3B6KfwCZtjMlbdqAakj
+          ...snip...
+          DvHKTdD9MDAunZlQIgO2zotmgVh2LBerGMbsdsTQ268sARY02MLV/Q5erASYdCxk
+          -----END RSA PRIVATE KEY-----
+    - path: /root/etcdctl.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/bash
+          set -x
+          etcdctl --cacert /var/lib/etcd/ca.pem --key /root/cli.key --cert /root/cli.crt put k 1234
+          etcdctl --cacert /var/lib/etcd/ca.pem --key /root/cli.key --cert /root/cli.crt get k
 
 passwd:
   users:
