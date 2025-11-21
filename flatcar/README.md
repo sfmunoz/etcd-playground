@@ -17,7 +17,40 @@
 
 Reset/provision of flatcar hosts (**etcd.json** is created, injected followed by VM reset):
 ```
-IPS="192.168.0.1 192.168.0.2 192.168.0.3" make reset
+$ IPS="192.168.56.31 192.168.56.32 192.168.56.33" make reset
++ scp etcd.json core@192.168.56.31:
+etcd.json                                                                                                          100% 3829     5.6MB/s   00:00
++ ssh core@192.168.56.31 sudo flatcar-reset --keep-machine-id --keep-paths '/etc/ssh/ssh_host_.*' /var/log -F etcd.json && sudo systemctl reboot
+WARNING: Running without --backup can cause data loss if the keep paths don't work as expected.
+Also check whether your regex works as wanted with --preview-delete and --preview-keep.
+
+Wrote machine ID as kernel cmdline parameter to /oem/grub.cfg
+Removed any ignition.config.url kernel cmdline parameter in /oem/grub.cfg
+Wrote Ignition file /oem/config.ign
+Prepared /selective-os-reset and /boot/flatcar/first_boot
+Staged OS reset, you can reboot now
++ scp etcd.json core@192.168.56.32:
+etcd.json                                                                                                          100% 3829     4.9MB/s   00:00
++ ssh core@192.168.56.32 sudo flatcar-reset --keep-machine-id --keep-paths '/etc/ssh/ssh_host_.*' /var/log -F etcd.json && sudo systemctl reboot
+WARNING: Running without --backup can cause data loss if the keep paths don't work as expected.
+Also check whether your regex works as wanted with --preview-delete and --preview-keep.
+
+Wrote machine ID as kernel cmdline parameter to /oem/grub.cfg
+Removed any ignition.config.url kernel cmdline parameter in /oem/grub.cfg
+Wrote Ignition file /oem/config.ign
+Prepared /selective-os-reset and /boot/flatcar/first_boot
+Staged OS reset, you can reboot now
++ scp etcd.json core@192.168.56.33:
+etcd.json                                                                                                          100% 3829     3.4MB/s   00:00
++ ssh core@192.168.56.33 sudo flatcar-reset --keep-machine-id --keep-paths '/etc/ssh/ssh_host_.*' /var/log -F etcd.json && sudo systemctl reboot
+WARNING: Running without --backup can cause data loss if the keep paths don't work as expected.
+Also check whether your regex works as wanted with --preview-delete and --preview-keep.
+
+Wrote machine ID as kernel cmdline parameter to /oem/grub.cfg
+Removed any ignition.config.url kernel cmdline parameter in /oem/grub.cfg
+Wrote Ignition file /oem/config.ign
+Prepared /selective-os-reset and /boot/flatcar/first_boot
+Staged OS reset, you can reboot now
 ```
 Demo client execution (TLS):
 ```
